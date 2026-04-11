@@ -71,7 +71,7 @@ docker compose run --rm pipeline
 Outputs:
 
 - Parquet: `data/processed/bronze/...`, `data/processed/silver/...` (mounted on the host).
-- dbt artifacts: inside the container under `dbt/target/` (add a volume in `docker-compose.yml` if you need the DuckDB file on the host).
+- dbt: `dbt/target/` on the host (DuckDB file `dbt/target/pipeline.duckdb`, volume-mounted from the container).
 
 Environment (see `.env.example`):
 
