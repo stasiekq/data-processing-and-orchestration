@@ -9,3 +9,5 @@ services:
       # Mount host CSV + persist processed outputs on the host
       - ./ecommerce_customer_data_custom_ratios.csv:/data/raw/ecommerce_customer_data_custom_ratios.csv:ro
       - ./data/processed:/data/processed
+      # Persist DuckDB + dbt artifacts for inspection (`duckdb dbt/target/pipeline.duckdb`)
+      - ./dbt/target:/app/dbt/target
