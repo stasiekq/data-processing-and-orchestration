@@ -1,0 +1,32 @@
+flowchart LR
+  subgraph sources
+    CSV[(Raw CSV\nlanded in repo)]
+  end
+
+  subgraph orchestration[Dagster]
+    A1[bronze_ecommerce_transactions]
+    A2[silver_ecommerce_transactions]
+    A3[dbt_ecommerce_marts]
+    A1 --> A2 --> A3
+  end
+
+  subgraph spark[PySpark]
+    B1[Read CSV\nnormalize schema]
+    B2[Hive-partitioned\nbronze Parquet]
+    B3[Clean + dedupe\nsilver Parquet]
+    B1 --> B2 --> B3
+  end
+
+  subgraph dbt[dbt + DuckDB]
+    D1[stg_ecommerce_transactions\nread_parquet glob]
+    D2[marts:\ndaily revenue + customer rollups]
+    D1 --> D2
+  end
+
+  CSV --> A1
+  A1 --> B1
+  B2 --> A2
+  A2 --> B3
+  B3 --> A3
+  A3 --> D1
+  D2 --> OUT[(DuckDB tables\n+ dbt tests)]

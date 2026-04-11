@@ -1,0 +1,26 @@
+version: 2
+
+models:
+  - name: mart_daily_category_revenue
+    description: Daily revenue by product category (gold layer).
+    columns:
+      - name: purchase_date
+        tests:
+          - not_null
+      - name: product_category
+        tests:
+          - not_null
+      - name: revenue
+        tests:
+          - not_null
+
+  - name: mart_customer_rollups
+    description: Per-customer spend and churn flag from silver transactions.
+    columns:
+      - name: customer_id
+        tests:
+          - not_null
+          - unique
+      - name: lifetime_revenue
+        tests:
+          - not_null

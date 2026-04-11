@@ -1,0 +1,10 @@
+# Orchestration
+dagster>=1.6,<2
+dagster-webserver>=1.6,<2
+
+# Processing
+pyspark>=3.5,<4
+
+# Declarative transforms (bonus)
+dbt-core>=1.7,<2
+dbt-duckdb>=1.7,<2

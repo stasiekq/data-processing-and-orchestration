@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Dagster
+.dagster/
+
+# dbt
+dbt/target/
+dbt/logs/
+*.duckdb
+*.duckdb.wal
+
+# Processed data (regenerate with pipeline)
+data/processed/
+
+# Env
+.env
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS
+.DS_Store

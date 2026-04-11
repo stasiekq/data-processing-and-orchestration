@@ -1,0 +1,21 @@
+name: ecommerce_analytics
+version: 1.0.0
+config-version: 2
+profile: ecommerce_analytics
+
+model-paths: ["models"]
+target-path: target
+clean-targets:
+  - target
+  - dbt_packages
+
+vars:
+  # Overridden by Dagster / CLI with absolute glob to silver Parquet.
+  silver_glob: "../data/processed/silver/ecommerce_transactions/**/*.parquet"
+
+models:
+  ecommerce_analytics:
+    staging:
+      +materialized: view
+    marts:
+      +materialized: table
