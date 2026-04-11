@@ -16,9 +16,6 @@ COPY ecommerce_pipeline ./ecommerce_pipeline
 COPY dbt ./dbt
 COPY run_pipeline.py ./
 
-# Sample data (override with a bind-mount for your own file)
-COPY ecommerce_customer_data_custom_ratios.csv ./
-
 RUN pip install --no-cache-dir -r requirements.txt \
     && pip install --no-cache-dir -e .
 

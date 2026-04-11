@@ -18,7 +18,7 @@ def pipeline_run_id() -> str:
 
 
 def raw_csv_path() -> Path:
-    p = os.environ.get("ECOMMERCE_RAW_CSV_PATH", "ecommerce_customer_data_custom_ratios.csv")
+    p = os.environ.get("ECOMMERCE_RAW_CSV_PATH", "data/raw/ecommerce_customer_data_custom_ratios.csv")
     path = Path(p)
     return path if path.is_absolute() else (REPO_ROOT / path).resolve()
 

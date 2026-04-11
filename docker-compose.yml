@@ -6,8 +6,8 @@ services:
       ECOMMERCE_RAW_CSV_PATH: /data/raw/ecommerce_customer_data_custom_ratios.csv
       ECOMMERCE_PROCESSED_ROOT: /data/processed
     volumes:
-      # Mount host CSV + persist processed outputs on the host
-      - ./ecommerce_customer_data_custom_ratios.csv:/data/raw/ecommerce_customer_data_custom_ratios.csv:ro
+      # Place CSV under data/raw/ on the host (see README — Kaggle download)
+      - ./data/raw/ecommerce_customer_data_custom_ratios.csv:/data/raw/ecommerce_customer_data_custom_ratios.csv:ro
       - ./data/processed:/data/processed
       # Persist DuckDB + dbt artifacts for inspection (`duckdb dbt/target/pipeline.duckdb`)
       - ./dbt/target:/app/dbt/target

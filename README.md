@@ -41,6 +41,16 @@ flowchart LR
 
 The same diagram source lives in [`docs/architecture.mmd`](docs/architecture.mmd) for editors that render Mermaid.
 
+## Dataset
+
+The raw CSV is **not** stored in this repository. Download a compatible extract from Kaggle (e.g. **E-Commerce Customer for Behavior Analysis**), save it as:
+
+`data/raw/ecommerce_customer_data_custom_ratios.csv`
+
+(or set `ECOMMERCE_RAW_CSV_PATH` to your file).
+
+Source: [E-Commerce Customer for Behavior Analysis (Kaggle)](https://www.kaggle.com/datasets/shriyashjagtap/e-commerce-customer-for-behavior-analysis)
+
 ## Idempotency and data safety
 
 - **No wholesale `DROP` of datasets.** Spark writes use **dynamic partition overwrite** (`partitionOverwriteMode=dynamic`) on `purchase_date`, so re-running over the same logical batch refreshes only the partitions present in the current DataFrame—other date partitions are left intact.
@@ -61,7 +71,7 @@ The same diagram source lives in [`docs/architecture.mmd`](docs/architecture.mmd
 
 ## Quick start (Docker)
 
-From the repository root:
+Download the CSV (see [Dataset](#dataset)) into `data/raw/ecommerce_customer_data_custom_ratios.csv`, then from the repository root:
 
 ```bash
 docker compose build
@@ -89,6 +99,7 @@ source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 pip install -e .
 export JAVA_HOME=...        # JDK 17, see above
+# Add CSV under data/raw/ (see Dataset), then:
 python run_pipeline.py
 ```
 
@@ -105,6 +116,7 @@ python run_pipeline.py
 | `ecommerce_pipeline/` | Dagster definitions, Spark jobs, config |
 | `dbt/` | dbt project (staging + marts), DuckDB profile |
 | `docs/architecture.mmd` | Mermaid source for the diagram |
+| `data/raw/` | Put downloaded CSV here (see [Dataset](#dataset); `*.csv` gitignored) |
 | `data/processed/` | Generated Parquet (gitignored—recreate with the pipeline) |
 | `run_pipeline.py` | Assignment single entry point |
 

@@ -17,6 +17,10 @@ dbt/logs/
 *.duckdb
 *.duckdb.wal
 
+# Raw / sample data (download separately — see README)
+data/raw/*.csv
+ecommerce_customer_data_custom_ratios.csv
+
 # Processed data (regenerate with pipeline)
 data/processed/
 
