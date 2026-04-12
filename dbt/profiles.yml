@@ -1,5 +1,3 @@
-# Used with: dbt run --profiles-dir .
-# When cwd is dbt/, DuckDB file is created under dbt/target/
 ecommerce_analytics:
   target: dev
   outputs:

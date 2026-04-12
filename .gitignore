@@ -26,6 +26,7 @@ data/processed/
 
 # Env
 .env
+.idea/
 
 # Jupyter
 .ipynb_checkpoints/

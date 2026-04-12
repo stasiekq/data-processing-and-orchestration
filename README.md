@@ -1,6 +1,6 @@
 # E-commerce data processing and orchestration
 
-Batch pipeline for the course assignment: **Dagster** orchestration, **PySpark** for scalable CSV → Parquet processing (outside the database), **dbt** + **DuckDB** for declarative gold-layer marts and tests.
+Batch pipeline: **Dagster** orchestration, **PySpark** for scalable CSV → Parquet processing (outside the database), **dbt** + **DuckDB** for declarative gold-layer marts and tests.
 
 ## Architecture
 
@@ -39,17 +39,14 @@ flowchart LR
   D2 --> OUT[(DuckDB tables)]
 ```
 
-The same diagram source lives in [`docs/architecture.mmd`](docs/architecture.mmd) for editors that render Mermaid.
-
 ## Dataset
 
-The raw CSV is **not** stored in this repository. Download a compatible extract from Kaggle (e.g. **E-Commerce Customer for Behavior Analysis**), save it as:
+The raw CSV is not stored in this repository. Please download it from Kaggle, save it as:
 
 `data/raw/ecommerce_customer_data_custom_ratios.csv`
 
-(or set `ECOMMERCE_RAW_CSV_PATH` to your file).
 
-Source: [E-Commerce Customer for Behavior Analysis (Kaggle)](https://www.kaggle.com/datasets/shriyashjagtap/e-commerce-customer-for-behavior-analysis)
+Source: [https://www.kaggle.com/datasets/shriyashjagtap/e-commerce-customer-for-behavior-analysis](https://www.kaggle.com/datasets/shriyashjagtap/e-commerce-customer-for-behavior-analysis)
 
 ## Idempotency and data safety
 
@@ -59,19 +56,11 @@ Source: [E-Commerce Customer for Behavior Analysis (Kaggle)](https://www.kaggle.
 
 ## Prerequisites
 
-- **Recommended:** Docker (see below)—includes **Java 17**, which Spark 3.5 expects.
-- **Local (no Docker):**
-  - **Python 3.10–3.12** (Spark 3.5 + Py4J are problematic on **Python 3.14** in many setups).
-  - **JDK 17** (Temurin or OpenJDK). Spark 3.5 + Hadoop **fail on JDK 24+** with `Subject.getSubject` / UGI errors. On macOS:
+- Docker
 
-    ```bash
-    brew install openjdk@17
-    export JAVA_HOME="$(/usr/libexec/java_home -v 17)"
-    ```
+## Quick start
 
-## Quick start (Docker)
-
-Download the CSV (see [Dataset](#dataset)) into `data/raw/ecommerce_customer_data_custom_ratios.csv`, then from the repository root:
+Download the CSV into `data/raw/ecommerce_customer_data_custom_ratios.csv`, then run from the repository root:
 
 ```bash
 docker compose build
@@ -91,23 +80,6 @@ Environment (see `.env.example`):
 | `ECOMMERCE_PROCESSED_ROOT` | Root for Parquet trees (compose sets `/data/processed`) |
 | `PIPELINE_RUN_ID` | Optional stable id logged in bronze |
 
-## Quick start (venv)
-
-```bash
-python3.11 -m venv .venv
-source .venv/bin/activate   # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
-pip install -e .
-export JAVA_HOME=...        # JDK 17, see above
-# Add CSV under data/raw/ (see Dataset), then:
-python run_pipeline.py
-```
-
-### Single entry point
-
-- **CLI:** `python run_pipeline.py` (optional: `--run-id`, `--skip-dbt`).
-- **Notebook:** [`notebooks/pipeline.ipynb`](notebooks/pipeline.ipynb) calls the same script.
-- **Dagster UI:** `dagster dev -m ecommerce_pipeline.definitions` then open the local URL and materialize assets or run job `ecommerce_pipeline_job`.
 
 ## Repository layout
 
@@ -115,19 +87,7 @@ python run_pipeline.py
 |------|------|
 | `ecommerce_pipeline/` | Dagster definitions, Spark jobs, config |
 | `dbt/` | dbt project (staging + marts), DuckDB profile |
-| `docs/architecture.mmd` | Mermaid source for the diagram |
 | `data/raw/` | Put downloaded CSV here (see [Dataset](#dataset); `*.csv` gitignored) |
 | `data/processed/` | Generated Parquet (gitignored—recreate with the pipeline) |
 | `run_pipeline.py` | Assignment single entry point |
-
-## Assignment checklist
-
-- [x] Orchestrated pipeline (**Dagster** assets + job).
-- [x] Runnable **PySpark** processing (CSV → partitioned Parquet) with one entry point.
-- [x] Architecture diagram in Git (README Mermaid + `docs/architecture.mmd`).
-- [x] **dbt** models + tests (bonus).
-- [x] Idempotent partition writes; meaningful env vars and structure for handover.
-
-## License
-
-Educational / assignment use.
+| `architecture.mmd` | Mermaid source for the diagram |

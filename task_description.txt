@@ -1,7 +1,0 @@
-• Orchestrated pipeline with scalable processing engine (using tool of your choice - spend 10 minutes searching for something interesting and modern)
-• Runnable Spark (or any other BigData processing engine) script or notebook (single entry point) - based on that you can choose if you prefer to process inside DB or outside of it
-• Pipeline Architecture Diagram (best case visible in Git)
-
-Optional for bonus points - use dbt as a transformation declaration tool. dbt is a standard in the Data world, so if you are anyhow interested in this kind of applications - it is a bare minimum for modern orgs internships/junior positions, worth learning more extensively.
-
-+ remember about idemptotency, avoid dropping data wherever not necessary, ensure your git, files, branches, commits and variables have meaningful names and structure so it is easy to work with (as if you had to give it away to a junior person for maintenance and further development in a day)

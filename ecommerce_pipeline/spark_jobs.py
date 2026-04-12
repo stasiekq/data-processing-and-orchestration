@@ -14,7 +14,6 @@ if TYPE_CHECKING:
 def build_spark_session(app_name: str = "ecommerce_batch") -> "SparkSession":
     from pyspark.sql import SparkSession
 
-    # Helps on JDK 17+ with module encapsulation; use Java 17 LTS (see README — JDK 24+ breaks Spark 3.5 + Hadoop UGI).
     _driver_opts = (
         "--add-opens=java.base/java.lang=ALL-UNNAMED "
         "--add-opens=java.base/java.lang.invoke=ALL-UNNAMED "
