@@ -44,3 +44,21 @@ def silver_glob_for_dbt() -> str:
 
 def dbt_project_dir() -> Path:
     return REPO_ROOT / "dbt"
+
+
+def raw_inbox_dir() -> Path:
+    p = os.environ.get("ECOMMERCE_RAW_INBOX_DIR", "data/raw/inbox")
+    path = Path(p)
+    return path if path.is_absolute() else (REPO_ROOT / path).resolve()
+
+
+def redis_host() -> str:
+    return os.environ.get("ECOMMERCE_REDIS_HOST", "localhost")
+
+
+def redis_port() -> int:
+    return int(os.environ.get("ECOMMERCE_REDIS_PORT", "6379"))
+
+
+def ingest_queue_name() -> str:
+    return os.environ.get("ECOMMERCE_INGEST_QUEUE", "ecommerce:ingest:queue")

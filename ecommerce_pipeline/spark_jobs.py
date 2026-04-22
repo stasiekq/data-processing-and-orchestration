@@ -50,10 +50,19 @@ def write_partitioned_parquet(df: "DataFrame", path: str, partition_col: str) ->
     )
 
 
-def bronze_from_csv(spark: "SparkSession", run_id: str | None = None) -> str:
+def bronze_from_csv(
+    spark: "SparkSession",
+    run_id: str | None = None,
+    csv_path: str | None = None,
+) -> str:
     """Read raw CSV, normalize column names, add lineage fields, write hive-partitioned Parquet."""
     run_id = run_id or pipeline_run_id()
-    src = raw_csv_path()
+    if csv_path is None:
+        src = raw_csv_path()
+    else:
+        from pathlib import Path
+
+        src = Path(csv_path).resolve()
     if not src.is_file():
         raise FileNotFoundError(f"Raw CSV not found: {src}")
 

@@ -1,13 +1,19 @@
 flowchart LR
   subgraph sources
-    CSV[(Raw CSV\nlanded in repo)]
+    SRC[(Source CSV/API drop)]
+    INBOX[(data/raw/inbox/*.csv)]
   end
 
   subgraph orchestration[Dagster]
+    S0[inbox_csv_sensor]
     A1[bronze_ecommerce_transactions]
     A2[silver_ecommerce_transactions]
     A3[dbt_ecommerce_marts]
-    A1 --> A2 --> A3
+    S0 --> A1 --> A2 --> A3
+  end
+
+  subgraph queue[Redis queue]
+    Q1[ecommerce:ingest:queue]
   end
 
   subgraph spark[PySpark]
@@ -23,7 +29,10 @@ flowchart LR
     D1 --> D2
   end
 
-  CSV --> A1
+  SRC --> INBOX
+  INBOX --> S0
+  S0 --> Q1
+  Q1 --> A1
   A1 --> B1
   B2 --> A2
   A2 --> B3

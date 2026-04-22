@@ -10,6 +10,7 @@ from typing import Any
 from dagster import asset
 
 from ecommerce_pipeline.config import dbt_project_dir, pipeline_run_id, silver_glob_for_dbt
+from ecommerce_pipeline.queue import dequeue_file
 from ecommerce_pipeline.spark_jobs import bronze_from_csv, build_spark_session, silver_from_bronze
 
 
@@ -17,12 +18,18 @@ from ecommerce_pipeline.spark_jobs import bronze_from_csv, build_spark_session, 
 def bronze_ecommerce_transactions(context) -> dict[str, Any]:
     run_id = pipeline_run_id()
     context.log.info("pipeline_run_id=%s", run_id)
+    queued = dequeue_file()
+    csv_path = queued.file_path if queued else None
+    if queued:
+        context.log.info("dequeued_event_id=%s csv_path=%s", queued.event_id, queued.file_path)
+    else:
+        context.log.info("queue empty; using default ECOMMERCE_RAW_CSV_PATH")
     spark = build_spark_session("ecommerce_bronze")
     try:
-        path = bronze_from_csv(spark, run_id=run_id)
+        path = bronze_from_csv(spark, run_id=run_id, csv_path=csv_path)
     finally:
         spark.stop()
-    return {"bronze_path": path, "run_id": run_id}
+    return {"bronze_path": path, "run_id": run_id, "queued_csv_path": csv_path}
 
 
 @asset(

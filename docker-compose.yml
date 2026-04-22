@@ -1,13 +1,24 @@
 services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
   pipeline:
     build: .
     image: ecommerce-pipeline:local
+    depends_on:
+      - redis
     environment:
       ECOMMERCE_RAW_CSV_PATH: /data/raw/ecommerce_customer_data_custom_ratios.csv
+      ECOMMERCE_RAW_INBOX_DIR: /data/raw/inbox
       ECOMMERCE_PROCESSED_ROOT: /data/processed
+      ECOMMERCE_REDIS_HOST: redis
+      ECOMMERCE_REDIS_PORT: 6379
     volumes:
       # Place CSV under data/raw/ on the host (see README — Kaggle download)
       - ./data/raw/ecommerce_customer_data_custom_ratios.csv:/data/raw/ecommerce_customer_data_custom_ratios.csv:ro
+      - ./data/raw/inbox:/data/raw/inbox
       - ./data/processed:/data/processed
       # Persist DuckDB + dbt artifacts for inspection (`duckdb dbt/target/pipeline.duckdb`)
       - ./dbt/target:/app/dbt/target
