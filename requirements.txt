@@ -5,3 +5,4 @@ pyspark>=3.5,<4
 
 dbt-core>=1.7,<2
 dbt-duckdb>=1.7,<2
+redis>=5,<6

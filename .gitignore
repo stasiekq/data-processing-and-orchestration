@@ -19,6 +19,7 @@ dbt/logs/
 
 # Raw / sample data (download separately — see README)
 data/raw/*.csv
+data/raw/inbox/*.csv
 ecommerce_customer_data_custom_ratios.csv
 
 # Processed data (regenerate with pipeline)
