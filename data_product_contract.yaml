@@ -1,0 +1,116 @@
+product_name: ecommerce_customer_behavior_analytics
+product_owner: "Staszek (Data Engineering Student)"
+contact: "MS Teams / GitHub profile"
+purpose: >
+  Provide curated e-commerce transaction data for behavior analysis,
+  category revenue trends, and customer-level rollups (including churn flag).
+
+data_sources:
+  - name: kaggle_ecommerce_customer_behavior
+    type: csv_file
+    location: "data/raw/ecommerce_customer_data_custom_ratios.csv"
+    origin_url: "https://www.kaggle.com/datasets/shriyashjagtap/e-commerce-customer-for-behavior-analysis"
+
+pipeline:
+  orchestration: dagster
+  processing_engine: pyspark
+  transformation_tool: dbt_duckdb
+  layers:
+    - bronze: "raw landing normalized to parquet"
+    - silver: "cleaned, typed, deduplicated transactions"
+    - gold: "dbt marts for analytics"
+
+refresh_frequency: "on demand; also trigger-based via Dagster sensor + Redis queue"
+access_method:
+  parquet:
+    bronze: "data/processed/bronze/ecommerce_transactions/"
+    silver: "data/processed/silver/ecommerce_transactions/"
+  duckdb:
+    database_file: "dbt/target/pipeline.duckdb"
+    marts:
+      - mart_daily_category_revenue
+      - mart_customer_rollups
+
+schema:
+  silver_ecommerce_transactions:
+    - name: customer_id
+      type: bigint
+      description: "Customer identifier"
+    - name: purchase_ts
+      type: timestamp
+      description: "Transaction timestamp"
+    - name: purchase_date
+      type: date
+      description: "Date partition key"
+    - name: product_category
+      type: string
+      description: "Category (Electronics/Home/Clothing/Books)"
+    - name: product_price
+      type: double
+      description: "Unit price from source"
+    - name: quantity
+      type: double
+      description: "Purchased quantity"
+    - name: total_purchase_amount
+      type: double
+      description: "Total transaction amount from source"
+    - name: payment_method
+      type: string
+      description: "Payment channel"
+    - name: returns
+      type: double
+      description: "Return indicator/value; missing filled with 0.0"
+    - name: customer_name
+      type: string
+      description: "Customer name"
+    - name: age_years
+      type: double
+      description: "Unified age derived from source age columns"
+    - name: gender
+      type: string
+      description: "Gender from source"
+    - name: churn
+      type: integer
+      description: "Churn flag from source"
+    - name: ingest_run_id
+      type: string
+      description: "Pipeline run lineage id"
+    - name: ingest_batch_id
+      type: string
+      description: "Batch id for traceability"
+    - name: source_file_name
+      type: string
+      description: "Input file name"
+
+quality_metrics:
+  - name: completeness_customer_id
+    definition: "Percent of rows with non-null customer_id"
+    current_value: "100.0%"
+    threshold: ">=99%"
+    cadence: "every pipeline run"
+  - name: validity_total_purchase_amount_gt_0
+    definition: "Percent of rows with total_purchase_amount > 0"
+    current_value: "100.0%"
+    threshold: ">=99.5%"
+    cadence: "every pipeline run"
+  - name: category_consistency
+    definition: "Percent of Product Category values in {Electronics, Home, Clothing, Books}"
+    current_value: "100.0%"
+    threshold: "=100%"
+    cadence: "every pipeline run"
+
+known_limitations:
+  - "Source is static historical CSV; freshness may violate operational thresholds."
+  - "Synthetic/educational dataset; not representative for all real-world behavior."
+  - "total_purchase_amount may not always equal product_price * quantity by design/source."
+
+example_usage:
+  sql: |
+    SELECT purchase_date, product_category, revenue
+    FROM mart_daily_category_revenue
+    ORDER BY purchase_date DESC, revenue DESC
+    LIMIT 20;
+  python: |
+    import duckdb
+    con = duckdb.connect("dbt/target/pipeline.duckdb")
+    df = con.sql("SELECT * FROM mart_customer_rollups LIMIT 10").df()
